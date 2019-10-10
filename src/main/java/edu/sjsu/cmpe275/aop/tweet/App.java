@@ -16,16 +16,19 @@ public class App {
         try {
             int msg = tweeter.tweet("alex", "first tweet");
             tweeter.follow("bob", "alex");
+            tweeter.follow("alex", "animesh");
+            tweeter.follow("bob", "erb");
+            tweeter.follow("alex", "Animesh");
             tweeter.retweet("bob", msg);
             tweeter.block("alex", "bob");
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        System.out.println("Most productive user: " + stats.getMostProductiveUser());
-        System.out.println("Most popular user: " + stats.getMostFollowedUser());
-        System.out.println("Length of the longest tweet: " + stats.getLengthOfLongestTweet());
-        System.out.println("Most popular message: " + stats.getMostPopularMessage());
+        System.out.println("STATS --- Most productive user: " + stats.getMostProductiveUser());
+        System.out.println("STATS --- Most popular user: " + stats.getMostFollowedUser());
+        System.out.println("STATS --- Length of the longest tweet: " + stats.getLengthOfLongestTweet());
+        System.out.println("STATS --- Most popular message: " + stats.getMostPopularMessage());
         ctx.close();
     }
 }

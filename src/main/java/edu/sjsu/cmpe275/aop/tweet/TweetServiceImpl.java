@@ -11,6 +11,9 @@ public class TweetServiceImpl implements TweetService {
      */
 
     public int tweet(String user, String message) throws IllegalArgumentException, IOException {
+		if ((message.length() > 140) || user == null || user.isEmpty() ||  message == null || message.isEmpty()) {
+			throw new IllegalArgumentException();
+		}
     	System.out.printf("User %s tweeted message: %s\n", user, message);
     	return 0;
     }
@@ -25,7 +28,10 @@ public class TweetServiceImpl implements TweetService {
 
 	public int retweet(String user, int messageId)
 			throws AccessControlException, IllegalArgumentException, IOException {
-		// TODO Auto-generated method stub
+		if (user == null || user.isEmpty()) {
+			throw new IllegalArgumentException();
+		}
+
 		return 0;
 	}
 
