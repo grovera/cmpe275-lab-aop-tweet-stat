@@ -15,12 +15,18 @@ public class App {
 
         try {
             int msg = tweeter.tweet("alex", "first tweet");
+            int msg1 = tweeter.tweet("bob", "first tweet");
+            int msg2 = tweeter.tweet("bob", "second tweet");
             tweeter.follow("bob", "alex");
             tweeter.follow("alex", "animesh");
             tweeter.follow("bob", "erb");
             tweeter.follow("alex", "Animesh");
+            tweeter.follow("alex", "bob");
             tweeter.retweet("bob", msg);
             tweeter.block("alex", "bob");
+            //tweeter.follow("sameFollow", "sameFollow");
+            //tweeter.block("sameBlock", "sameBlock");
+
         } catch (Exception e) {
             e.printStackTrace();
         }

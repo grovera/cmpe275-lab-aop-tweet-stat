@@ -31,10 +31,17 @@ public class StatsAspect {
 
 		String tweetingUser = (String) joinPoint.getArgs()[0];
 		String tweetedMessage = (String) joinPoint.getArgs()[1];
+
+		//save message data
+		TweetStatsServiceImpl.messageIdUserMap.put((Integer) result, tweetingUser);
+		TweetStatsServiceImpl.messageRepoMap.put((Integer) result, tweetedMessage);
+
 		if(tweetedMessage.length() > TweetStatsServiceImpl.lengthOfLongestTweet)
 		{
 			TweetStatsServiceImpl.lengthOfLongestTweet = tweetedMessage.length();
 		}
+
+		//update PopularMessage
 
 		//Update productiveUserMap
 		int tempTotalMessageLength = TweetStatsServiceImpl.productiveUserMap.containsKey(tweetingUser) ? TweetStatsServiceImpl.productiveUserMap.get(tweetingUser) : 0;
@@ -59,6 +66,17 @@ public class StatsAspect {
 		else{
 			TweetStatsServiceImpl.mostProductiveUser = tweetingUser;
 		}
+	}
+
+	@AfterReturning(pointcut="execution(public * edu.sjsu.cmpe275.aop.tweet.TweetService.retweet(..))", returning="result")
+	public void afterRetweet(JoinPoint joinPoint, Object result) {
+		String tweetingUser = (String) joinPoint.getArgs()[0];
+		int messageId = (Integer) joinPoint.getArgs()[1];
+		//save message data
+		//TweetStatsServiceImpl.userRetweetIdMap.put(tweetingUser, (Integer) result);
+		//TweetStatsServiceImpl.retweetMessageMap.put((Integer) result, messageId);
+
+		//update PopularMessage
 	}
 
 	@AfterReturning(pointcut="execution(public * edu.sjsu.cmpe275.aop.tweet.TweetService.follow(..))", returning="result")
@@ -92,10 +110,25 @@ public class StatsAspect {
 			TweetStatsServiceImpl.mostFollowedUser = follower;
 		}
 	}
-	
-	/*@Before("execution(public void edu.sjsu.cmpe275.aop.tweet.TweetService.follow(..))")
-	public void dummyBeforeAdvice(JoinPoint joinPoint) {
-		System.out.printf("Before the executuion of the metohd %s\n", joinPoint.getSignature().getName());
-	}*/
-	
+
+	@AfterReturning(pointcut="execution(public * edu.sjsu.cmpe275.aop.tweet.TweetService.block(..))", returning="result")
+	public void afterBlock(JoinPoint joinPoint, Object result) {
+		//Add followee to the block map
+		String user = (String) joinPoint.getArgs()[0];
+		String followee = (String) joinPoint.getArgs()[1];
+		Set<String> blockList = new HashSet<String>();
+		if(TweetStatsServiceImpl.blockedUserMap.containsKey(user))
+		{
+			blockList.addAll(TweetStatsServiceImpl.blockedUserMap.get(user));
+		}
+		blockList.add(followee);
+		TweetStatsServiceImpl.blockedUserMap.put(user, blockList);
+
+		//
+		/*for (int id: TweetStatsServiceImpl.messageIdUserMap.keySet()){
+			String value = TweetStatsServiceImpl.messageIdUserMap.get(id);
+			System.out.println(id + " " + value);
+		}*/
+	}
+
 }

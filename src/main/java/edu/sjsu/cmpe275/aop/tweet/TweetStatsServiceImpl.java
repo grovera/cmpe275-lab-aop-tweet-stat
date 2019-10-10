@@ -15,6 +15,12 @@ public class TweetStatsServiceImpl implements TweetStatsService {
 
 	public static Map<String, Integer> productiveUserMap = new TreeMap<String, Integer>();
 	public static Map<String, Set<String>> followedUserMap = new HashMap<String, Set<String>>();
+	public static Map<String, Set<String>> blockedUserMap = new HashMap<String, Set<String>>();
+	public static Map<Integer, String> messageIdUserMap = new HashMap<Integer, String>();
+	public static Map<Integer, String> messageRepoMap = new HashMap<Integer, String>();
+
+	public static Map<String, Integer> userRetweetIdMap = new HashMap<String, Integer>();
+	public static Map<Integer, Integer> retweetMessageMap = new HashMap<Integer, Integer>();
 
 	public void resetStatsAndSystem() {
 		lengthOfLongestTweet = 0;
@@ -26,6 +32,9 @@ public class TweetStatsServiceImpl implements TweetStatsService {
 		}
 		if(!followedUserMap.isEmpty()){
 			followedUserMap.clear();
+		}
+		if(!blockedUserMap.isEmpty()){
+			blockedUserMap.clear();
 		}
 	}
 
