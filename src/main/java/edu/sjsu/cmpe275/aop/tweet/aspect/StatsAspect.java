@@ -42,6 +42,42 @@ public class StatsAspect {
 		}
 
 		//update PopularMessage
+		if(TweetStatsServiceImpl.mostPopularMessage == null)
+		{
+			TweetStatsServiceImpl.mostPopularMessage = tweetedMessage;
+			TweetStatsServiceImpl.mostPopularMessageId = (Integer) result;
+			int primaryFollowers = TweetStatsServiceImpl.followedUserMap.containsKey(tweetingUser) ? TweetStatsServiceImpl.followedUserMap.get(tweetingUser).size() : 0;
+			if(TweetStatsServiceImpl.blockedUserMap.containsKey(tweetingUser) && primaryFollowers > 0)
+			{
+				for(String blockedUser : TweetStatsServiceImpl.blockedUserMap.get(tweetingUser)){
+					if(TweetStatsServiceImpl.followedUserMap.get(tweetingUser).contains(blockedUser))
+					{
+						primaryFollowers-=1;
+					}
+				}
+			}
+			TweetStatsServiceImpl.popularMessageDetailMap.put((Integer) result, primaryFollowers);
+		}
+		else{
+			int currentPopularMessageFollower = TweetStatsServiceImpl.popularMessageDetailMap.get(TweetStatsServiceImpl.mostPopularMessageId);
+			int tweetingUserFollowers = TweetStatsServiceImpl.followedUserMap.containsKey(tweetingUser) ? TweetStatsServiceImpl.followedUserMap.get(tweetingUser).size() : 0;
+			if(tweetingUserFollowers > currentPopularMessageFollower)
+			{
+				TweetStatsServiceImpl.mostPopularMessage = tweetedMessage;
+				TweetStatsServiceImpl.mostPopularMessageId = (Integer) result;
+				int primaryFollowers = TweetStatsServiceImpl.followedUserMap.containsKey(tweetingUser) ? TweetStatsServiceImpl.followedUserMap.get(tweetingUser).size() : 0;
+				if(TweetStatsServiceImpl.blockedUserMap.containsKey(tweetingUser) && primaryFollowers > 0)
+				{
+					for(String blockedUser : TweetStatsServiceImpl.blockedUserMap.get(tweetingUser)){
+						if(TweetStatsServiceImpl.followedUserMap.get(tweetingUser).contains(blockedUser))
+						{
+							primaryFollowers-=1;
+						}
+					}
+				}
+				TweetStatsServiceImpl.popularMessageDetailMap.put((Integer) result, primaryFollowers);
+			}
+		}
 
 		//Update productiveUserMap
 		int tempTotalMessageLength = TweetStatsServiceImpl.productiveUserMap.containsKey(tweetingUser) ? TweetStatsServiceImpl.productiveUserMap.get(tweetingUser) : 0;
@@ -72,11 +108,45 @@ public class StatsAspect {
 	public void afterRetweet(JoinPoint joinPoint, Object result) {
 		String tweetingUser = (String) joinPoint.getArgs()[0];
 		int messageId = (Integer) joinPoint.getArgs()[1];
+
 		//save message data
-		//TweetStatsServiceImpl.userRetweetIdMap.put(tweetingUser, (Integer) result);
-		//TweetStatsServiceImpl.retweetMessageMap.put((Integer) result, messageId);
+		TweetStatsServiceImpl.retweetOriginalOwnerMap.put((Integer) result, messageId);
 
 		//update PopularMessage
+		if(!TweetStatsServiceImpl.retweetOriginalOwnerMap.containsKey(messageId)){
+			if(TweetStatsServiceImpl.followedUserMap.containsKey(tweetingUser))
+			{
+				int retweetingUsersFollowers = TweetStatsServiceImpl.followedUserMap.get(tweetingUser).size();
+				if(TweetStatsServiceImpl.blockedUserMap.containsKey(tweetingUser) && retweetingUsersFollowers > 0)
+				{
+					for(String blockedUser : TweetStatsServiceImpl.blockedUserMap.get(tweetingUser)){
+						if(TweetStatsServiceImpl.followedUserMap.get(tweetingUser).contains(blockedUser) /*|| TweetStatsServiceImpl.followedUserMap.get(tweetingUser).contains(blockedUser)*/)
+						{
+							retweetingUsersFollowers-=1;
+						}
+					}
+				}
+				TweetStatsServiceImpl.popularMessageDetailMap.put(messageId, (TweetStatsServiceImpl.popularMessageDetailMap.get(messageId) + retweetingUsersFollowers));
+			}
+		}
+		else
+		{
+			//retweet of retweet
+			if(TweetStatsServiceImpl.followedUserMap.containsKey(tweetingUser))
+			{
+				int retweetingUsersFollowers = TweetStatsServiceImpl.followedUserMap.get(tweetingUser).size();
+				if(TweetStatsServiceImpl.blockedUserMap.containsKey(tweetingUser) && retweetingUsersFollowers > 0)
+				{
+					for(String blockedUser : TweetStatsServiceImpl.blockedUserMap.get(tweetingUser)){
+						if(TweetStatsServiceImpl.followedUserMap.get(tweetingUser).contains(blockedUser) /*|| TweetStatsServiceImpl.followedUserMap.get(tweetingUser).contains(blockedUser)*/)
+						{
+							retweetingUsersFollowers-=1;
+						}
+					}
+				}
+				//TweetStatsServiceImpl.popularMessageDetailMap.put(TweetStatsServiceImpl.retweetOriginalOwnerMap.get(messageId), (TweetStatsServiceImpl.popularMessageDetailMap.get(messageId) + retweetingUsersFollowers));
+			}
+		}
 	}
 
 	@AfterReturning(pointcut="execution(public * edu.sjsu.cmpe275.aop.tweet.TweetService.follow(..))", returning="result")
@@ -125,6 +195,10 @@ public class StatsAspect {
 		TweetStatsServiceImpl.blockedUserMap.put(user, blockList);
 
 		//
+		/*for (int id: TweetStatsServiceImpl.popularMessageDetailMap.keySet()){
+			int value = TweetStatsServiceImpl.popularMessageDetailMap.get(id);
+			System.out.println(id + " " + value);
+		}*/
 		/*for (int id: TweetStatsServiceImpl.messageIdUserMap.keySet()){
 			String value = TweetStatsServiceImpl.messageIdUserMap.get(id);
 			System.out.println(id + " " + value);

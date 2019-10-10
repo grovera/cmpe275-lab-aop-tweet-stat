@@ -6,6 +6,8 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.core.annotation.Order;
 import org.aspectj.lang.annotation.Around;
 
+import java.io.IOException;
+
 @Aspect
 @Order(1)
 public class RetryAspect {
@@ -17,25 +19,63 @@ public class RetryAspect {
      * @throws Throwable 
      */
 
-    /*@AfterThrowing(pointcut="execution(public * edu.sjsu.cmpe275.aop.tweet.TweetService.*(..))", throwing = "error")
-	public void ifNetworkFailure(ProceedingJoinPoint joinPoint, Throwable error) throws Throwable {
+    @Around("execution(public * edu.sjsu.cmpe275.aop.tweet.TweetService.*(..))")
+	public Object ifNetworkFailure(ProceedingJoinPoint joinPoint) throws Throwable {
 		try {
-			if(error.toString().equalsIgnoreCase("java.io.IOException"))
-			{
-				System.out.println("Network Failure! retrying.....");
+			Object result = joinPoint.proceed();
+			retryCount=0;
+			return result;
+		}
+		catch (IOException a) {
+			retryCount+=1;
+			System.out.println("Try # " + retryCount);
+			try {
+				Object result = joinPoint.proceed();
+				retryCount=0;
+				return result;
+			}
+			catch (IOException b) {
 				retryCount+=1;
-				if(retryCount <= 3)
-				{
+				System.out.println("Try # " + retryCount);
+				try {
+					Object result = joinPoint.proceed();
+					retryCount=0;
+					return result;
+				}
+				catch (IOException c) {
+					retryCount+=1;
 					System.out.println("Try # " + retryCount);
-					//joinPoint.getTarget().getClass().getName();
+					try {
+						Object result = joinPoint.proceed();
+						retryCount=0;
+						return result;
+					}
+					catch (IOException e) {
+						retryCount=0;
+						e.printStackTrace();
+						throw new IOException("All 3 retries failed!");
+					}
 				}
 			}
-		} catch (Throwable e) {
-			e.printStackTrace();
-			System.out.printf("Aborted the executuion of the metohd %s\n", joinPoint.getSignature().getName());
-			throw e;
 		}
-	}*/
+
+    	/*Object result = new Object();
+		while(retryCount <= 3)
+		{
+			try {
+				result = joinPoint.proceed();
+				retryCount=0;
+				return result;
+			}
+			catch (IOException e) {
+				retryCount+=1;
+				System.out.println("Try # " + retryCount);
+				e.printStackTrace();
+				throw new IOException("All 3 retries failed!");
+			}
+		}
+		return result;*/
+	}
 
 	/*@Around("execution(public int edu.sjsu.cmpe275.aop.tweet.TweetService.*tweet(..))")
 	public int dummyAdviceOne(ProceedingJoinPoint joinPoint) throws Throwable {
