@@ -10,16 +10,20 @@ public class TweetServiceImpl implements TweetService {
      * Following is a dummy implementation.
      * You can tweak the implementation to suit your need, but this file is NOT part of the submission.
      */
-    private int x = 0;
+    private int x = 1;
 
     public int tweet(String user, String message) throws IllegalArgumentException, IOException {
 		if ((message.length() > 140) || user == null || user.length() == 0 ||  message == null || message.length() == 0) {
 			throw new IllegalArgumentException();
 		}
-    	System.out.printf("User %s tweeted message: %s\n", user, message);
-		int temp = x;
-		x++;
-		return temp;
+		int temp = getMessageId();
+		if(temp == 0){
+			throw new IOException("test exception");
+		}
+		else {
+			System.out.printf("User %s tweeted message: %s\n", user, message);
+			return temp;
+		}
     }
 
     public void follow(String follower, String followee) throws IOException {
@@ -27,7 +31,7 @@ public class TweetServiceImpl implements TweetService {
     }
 
 	public void block(String user, String follower) throws IOException {
-       	System.out.printf("User %s blocked user %s \n", user, follower);		
+       	System.out.printf("User %s blocked user %s \n", user, follower);
 	}
 
 	public int retweet(String user, int messageId)
@@ -39,9 +43,18 @@ public class TweetServiceImpl implements TweetService {
 		return 0;
 	}
 
-	public int generateRandomNumber() {
+	private int getMessageId() {
+		int temp = x;
+		x++;
+
 		Random rand = new Random();
-		int n = rand.nextInt(500000);
-		return n;
+		int n = rand.nextInt(10);
+		if(n%2==1){
+			//return 0;
+			return temp;
+		}
+		else {
+			return temp;
+		}
 	}
 }

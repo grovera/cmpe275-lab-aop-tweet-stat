@@ -15,12 +15,13 @@ public class PermissionAspect {
 
     @Before("execution(public int edu.sjsu.cmpe275.aop.tweet.TweetService.tweet(..))")
 	public void validateTweet(JoinPoint joinPoint) {
-		System.out.printf("Permission check before the executuion of the metohd %s\n", joinPoint.getSignature().getName());
+		System.out.printf("Permission check before the execution of the method %s\n", joinPoint.getSignature().getName());
 		String tweetingUser = (String) joinPoint.getArgs()[0];
 		String message = (String) joinPoint.getArgs()[1];
 		if ((message.length() > 140) || tweetingUser == null || tweetingUser.length() == 0 ||  message == null || message.length() == 0) {
 			throw new IllegalArgumentException();
 		}
+		System.out.println("EXITED PERMISSION ASPECT");
 	}
 
 	@Before("execution(public int edu.sjsu.cmpe275.aop.tweet.TweetService.retweet(..))")
