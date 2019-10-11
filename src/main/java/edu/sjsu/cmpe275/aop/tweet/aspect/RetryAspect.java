@@ -21,7 +21,7 @@ public class RetryAspect {
      * @throws Throwable 
      */
 
-    @Around("execution(public * edu.sjsu.cmpe275.aop.tweet.TweetService.*(..))")
+    /*@Around("execution(public * edu.sjsu.cmpe275.aop.tweet.TweetService.*(..))")
 	public Object ifNetworkFailure(ProceedingJoinPoint joinPoint) throws Throwable {
 		System.out.println("ENTERED AROUND$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
 		Method method = ((MethodSignature) joinPoint.getSignature()).getMethod();
@@ -47,5 +47,5 @@ public class RetryAspect {
 		}
 		System.out.println("EXITED AROUND XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 		return joinPoint.proceed();
-	}
+	}*/
 }

@@ -19,7 +19,8 @@ public class TweetStatsServiceImpl implements TweetStatsService {
 	public static Map<String, Set<String>> blockedUserMap = new HashMap<String, Set<String>>();
 	public static Map<Integer, String> messageIdUserMap = new HashMap<Integer, String>();
 	public static Map<Integer, String> messageRepoMap = new HashMap<Integer, String>();
-	public static Map<Integer, Integer> popularMessageDetailMap = new HashMap<Integer, Integer>();
+
+	public static Map<Integer, Integer> messageFollowerMap = new HashMap<Integer, Integer>();
 	public static Map<Integer, Integer> retweetOriginalOwnerMap = new HashMap<Integer, Integer>();
 
 	public void resetStatsAndSystem() {

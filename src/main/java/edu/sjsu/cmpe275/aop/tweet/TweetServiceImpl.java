@@ -39,6 +39,7 @@ public class TweetServiceImpl implements TweetService {
 		if (user == null || user.length() == 0) {
 			throw new IllegalArgumentException();
 		}
+		System.out.printf("User %s retweeted message.\n", user);
 
 		return 0;
 	}

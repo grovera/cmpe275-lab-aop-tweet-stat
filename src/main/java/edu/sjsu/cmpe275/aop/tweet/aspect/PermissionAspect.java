@@ -19,9 +19,8 @@ public class PermissionAspect {
 		String tweetingUser = (String) joinPoint.getArgs()[0];
 		String message = (String) joinPoint.getArgs()[1];
 		if ((message.length() > 140) || tweetingUser == null || tweetingUser.length() == 0 ||  message == null || message.length() == 0) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Arguments are not valid");
 		}
-		System.out.println("EXITED PERMISSION ASPECT");
 	}
 
 	@Before("execution(public int edu.sjsu.cmpe275.aop.tweet.TweetService.retweet(..))")
@@ -30,52 +29,32 @@ public class PermissionAspect {
 		String tweetingUser = (String) joinPoint.getArgs()[0];
 		int messageId = (Integer) joinPoint.getArgs()[1];
 		if (tweetingUser == null || tweetingUser.length() == 0) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Arguments are not valid");
 		}
 		else {
 			String tweetOwner = TweetStatsServiceImpl.messageIdUserMap.get(messageId);
-			boolean isAccessControlException = false;
 			if(!TweetStatsServiceImpl.messageIdUserMap.keySet().contains(messageId)) {
-				isAccessControlException = true;
+				throw new AccessControlException("An access control violation was attempted. MessageId provided does not exist.");
 			}
 			else
 			{
-				if ((!TweetStatsServiceImpl.followedUserMap.get(tweetOwner).contains(tweetingUser) && !tweetOwner.equals(tweetingUser))) {
-					isAccessControlException = true;
+				if (((!TweetStatsServiceImpl.followedUserMap.containsKey(tweetOwner) || !TweetStatsServiceImpl.followedUserMap.get(tweetOwner).contains(tweetingUser)) && !tweetOwner.equals(tweetingUser))) {
+					throw new AccessControlException("An access control violation was attempted. User does not have access to this Tweet");
 				}
 				if(TweetStatsServiceImpl.blockedUserMap.containsKey(tweetOwner) && TweetStatsServiceImpl.blockedUserMap.get(tweetOwner).contains(tweetingUser)) {
-					isAccessControlException = true;
+					throw new AccessControlException("An access control violation was attempted. User if blocked by the Tweet author");
 				}
-			}
-
-			/*System.out.println(tweetOwner+"----"+tweetingUser);
-			System.out.println(TweetStatsServiceImpl.followedUserMap.get(tweetOwner).toString());
-			System.out.println(!TweetStatsServiceImpl.messageIdUserMap.keySet().contains(messageId) );
-			System.out.println((!TweetStatsServiceImpl.followedUserMap.get(tweetOwner).contains(tweetingUser) && !tweetOwner.equals(tweetingUser)));
-			System.out.println(TweetStatsServiceImpl.blockedUserMap.containsKey(tweetOwner) && TweetStatsServiceImpl.blockedUserMap.get(tweetOwner).contains(tweetingUser));*/
-			if(isAccessControlException){
-				throw new AccessControlException("An access control violation was attempted.");
 			}
 		}
 	}
 
-	@Before("execution(public void edu.sjsu.cmpe275.aop.tweet.TweetService.follow(..))")
-	public void validateFollow(JoinPoint joinPoint) {
+	@Before("execution(public void edu.sjsu.cmpe275.aop.tweet.TweetService.follow(..)) || execution(public void edu.sjsu.cmpe275.aop.tweet.TweetService.block(..))" )
+	public void validateFollowAndBlock(JoinPoint joinPoint) {
 		System.out.printf("Permission check before the executuion of the metohd %s\n", joinPoint.getSignature().getName());
 		String follower = (String) joinPoint.getArgs()[0];
 		String followee = (String) joinPoint.getArgs()[1];
 		if (follower == null || follower.length() == 0 ||  followee == null || followee.length() == 0 || follower.equals(followee)) {
-			throw new IllegalArgumentException();
-		}
-	}
-
-	@Before("execution(public void edu.sjsu.cmpe275.aop.tweet.TweetService.block(..))")
-	public void validateBlock(JoinPoint joinPoint) {
-		System.out.printf("Permission check before the executuion of the metohd %s\n", joinPoint.getSignature().getName());
-		String user = (String) joinPoint.getArgs()[0];
-		String followee = (String) joinPoint.getArgs()[1];
-		if (user == null || user.length() == 0 ||  followee == null || followee.length() == 0 || user.equals(followee)) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Arguments cannot be null or empty.");
 		}
 	}
 }

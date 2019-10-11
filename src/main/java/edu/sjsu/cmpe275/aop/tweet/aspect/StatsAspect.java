@@ -56,10 +56,10 @@ public class StatsAspect {
 					}
 				}
 			}
-			TweetStatsServiceImpl.popularMessageDetailMap.put((Integer) result, primaryFollowers);
+			TweetStatsServiceImpl.messageFollowerMap.put((Integer) result, primaryFollowers);
 		}
 		else{
-			int currentPopularMessageFollower = TweetStatsServiceImpl.popularMessageDetailMap.get(TweetStatsServiceImpl.mostPopularMessageId);
+			int currentPopularMessageFollower = TweetStatsServiceImpl.messageFollowerMap.get(TweetStatsServiceImpl.mostPopularMessageId);
 			int tweetingUserFollowers = TweetStatsServiceImpl.followedUserMap.containsKey(tweetingUser) ? TweetStatsServiceImpl.followedUserMap.get(tweetingUser).size() : 0;
 			if(tweetingUserFollowers > currentPopularMessageFollower)
 			{
@@ -75,7 +75,7 @@ public class StatsAspect {
 						}
 					}
 				}
-				TweetStatsServiceImpl.popularMessageDetailMap.put((Integer) result, primaryFollowers);
+				TweetStatsServiceImpl.messageFollowerMap.put((Integer) result, primaryFollowers);
 			}
 		}
 
@@ -126,7 +126,7 @@ public class StatsAspect {
 						}
 					}
 				}
-				TweetStatsServiceImpl.popularMessageDetailMap.put(messageId, (TweetStatsServiceImpl.popularMessageDetailMap.get(messageId) + retweetingUsersFollowers));
+				TweetStatsServiceImpl.messageFollowerMap.put(messageId, (TweetStatsServiceImpl.messageFollowerMap.get(messageId) + retweetingUsersFollowers));
 			}
 		}
 		else
