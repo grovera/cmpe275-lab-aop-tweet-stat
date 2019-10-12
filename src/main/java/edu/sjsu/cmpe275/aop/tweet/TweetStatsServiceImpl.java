@@ -11,7 +11,7 @@ public class TweetStatsServiceImpl implements TweetStatsService {
     public static int lengthOfLongestTweet = 0;
 	public static String mostFollowedUser = null;
 	public static String mostPopularMessage = null;
-	//public static int mostPopularMessageId = 0;
+	public static int mostPopularMessageId = 0;
 	public static String mostProductiveUser = null;
 
 	public static Map<String, Integer> productiveUserMap = new TreeMap<String, Integer>();
@@ -25,14 +25,12 @@ public class TweetStatsServiceImpl implements TweetStatsService {
 	//map to link retweeted message id to the top parent message id
 	public static Map<Integer, Integer> retweetedMessageParentMap = new HashMap<Integer, Integer>();
 
-	//public static Map<Integer, Integer> messageFollowerMap = new HashMap<Integer, Integer>();
-	//public static Map<Integer, Integer> retweetOriginalOwnerMap = new HashMap<Integer, Integer>();
-
 	public void resetStatsAndSystem() {
 		lengthOfLongestTweet = 0;
 		mostFollowedUser = null;
 		mostPopularMessage = null;
 		mostProductiveUser = null;
+		mostPopularMessageId = 0;
 		if(!productiveUserMap.isEmpty()){
 			productiveUserMap.clear();
 		}
@@ -41,6 +39,15 @@ public class TweetStatsServiceImpl implements TweetStatsService {
 		}
 		if(!blockedUserMap.isEmpty()){
 			blockedUserMap.clear();
+		}
+		if(!messageSharingMap.isEmpty()){
+			messageSharingMap.clear();
+		}
+		if(!messageIdUserMap.isEmpty()){
+			messageIdUserMap.clear();
+		}
+		if(!messageRepoMap.isEmpty()){
+			messageRepoMap.clear();
 		}
 	}
 

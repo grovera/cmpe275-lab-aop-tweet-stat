@@ -38,13 +38,7 @@ public class PermissionAspect {
 			}
 			else
 			{
-				System.out.println("entered ???????????????????????");
 				String tweetOwner = TweetStatsServiceImpl.messageIdUserMap.get(messageId);
-				System.out.println("TweetOwner: "+ tweetOwner);
-				for (String id: TweetStatsServiceImpl.followedUserMap.keySet()) {
-					Set<String> value = TweetStatsServiceImpl.followedUserMap.get(id);
-					System.out.println(id + " " + value.toString());
-				}
 				int parentMessageId = TweetStatsServiceImpl.messageSharingMap.containsKey(messageId) ? messageId : TweetStatsServiceImpl.retweetedMessageParentMap.get(messageId);
 				if (!TweetStatsServiceImpl.messageSharingMap.get(parentMessageId).contains(tweetingUser) && !tweetOwner.equals(tweetingUser)) {
 					throw new AccessControlException("An access control violation was attempted. User does not have access to this Tweet");

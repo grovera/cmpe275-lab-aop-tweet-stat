@@ -41,44 +41,6 @@ public class StatsAspect {
 			TweetStatsServiceImpl.lengthOfLongestTweet = tweetedMessage.length();
 		}
 
-		//update PopularMessage
-		/*if(TweetStatsServiceImpl.mostPopularMessage == null)
-		{
-			TweetStatsServiceImpl.mostPopularMessage = tweetedMessage;
-			TweetStatsServiceImpl.mostPopularMessageId = (Integer) result;
-			int primaryFollowers = TweetStatsServiceImpl.followedUserMap.containsKey(tweetingUser) ? TweetStatsServiceImpl.followedUserMap.get(tweetingUser).size() : 0;
-			if(TweetStatsServiceImpl.blockedUserMap.containsKey(tweetingUser) && primaryFollowers > 0)
-			{
-				for(String blockedUser : TweetStatsServiceImpl.blockedUserMap.get(tweetingUser)){
-					if(TweetStatsServiceImpl.followedUserMap.get(tweetingUser).contains(blockedUser))
-					{
-						primaryFollowers-=1;
-					}
-				}
-			}
-			TweetStatsServiceImpl.messageFollowerMap.put((Integer) result, primaryFollowers);
-		}
-		else{
-			int currentPopularMessageFollower = TweetStatsServiceImpl.messageFollowerMap.get(TweetStatsServiceImpl.mostPopularMessageId);
-			int tweetingUserFollowers = TweetStatsServiceImpl.followedUserMap.containsKey(tweetingUser) ? TweetStatsServiceImpl.followedUserMap.get(tweetingUser).size() : 0;
-			if(tweetingUserFollowers > currentPopularMessageFollower)
-			{
-				TweetStatsServiceImpl.mostPopularMessage = tweetedMessage;
-				TweetStatsServiceImpl.mostPopularMessageId = (Integer) result;
-				int primaryFollowers = TweetStatsServiceImpl.followedUserMap.containsKey(tweetingUser) ? TweetStatsServiceImpl.followedUserMap.get(tweetingUser).size() : 0;
-				if(TweetStatsServiceImpl.blockedUserMap.containsKey(tweetingUser) && primaryFollowers > 0)
-				{
-					for(String blockedUser : TweetStatsServiceImpl.blockedUserMap.get(tweetingUser)){
-						if(TweetStatsServiceImpl.followedUserMap.get(tweetingUser).contains(blockedUser))
-						{
-							primaryFollowers-=1;
-						}
-					}
-				}
-				TweetStatsServiceImpl.messageFollowerMap.put((Integer) result, primaryFollowers);
-			}
-		}*/
-
 		//Update productiveUserMap
 		int tempTotalMessageLength = TweetStatsServiceImpl.productiveUserMap.containsKey(tweetingUser) ? TweetStatsServiceImpl.productiveUserMap.get(tweetingUser) : 0;
 		TweetStatsServiceImpl.productiveUserMap.put(tweetingUser, (tempTotalMessageLength + tweetedMessage.length()));
@@ -105,6 +67,16 @@ public class StatsAspect {
 
 		//update messageSharingMap
 		updateMessageSharingMap(tweetingUser, (Integer) result);
+
+		//update PopularMessage
+		if(TweetStatsServiceImpl.mostPopularMessage == null ||
+				(TweetStatsServiceImpl.messageSharingMap.get((Integer) result).size() > TweetStatsServiceImpl.messageSharingMap.get(TweetStatsServiceImpl.mostPopularMessageId).size()) ||
+				(TweetStatsServiceImpl.messageSharingMap.get((Integer) result).size() == TweetStatsServiceImpl.messageSharingMap.get(TweetStatsServiceImpl.mostPopularMessageId).size() &&
+						TweetStatsServiceImpl.mostPopularMessage.compareTo(tweetedMessage) > 0))
+		{
+			TweetStatsServiceImpl.mostPopularMessage = tweetedMessage;
+			TweetStatsServiceImpl.mostPopularMessageId = (Integer) result;
+		}
 	}
 
 	@AfterReturning(pointcut="execution(public * edu.sjsu.cmpe275.aop.tweet.TweetService.retweet(..))", returning="result")
@@ -120,46 +92,20 @@ public class StatsAspect {
 		else{
 			TweetStatsServiceImpl.retweetedMessageParentMap.put((Integer) result, messageId);
 		}
-		/*TweetStatsServiceImpl.retweetOriginalOwnerMap.put((Integer) result, messageId);
-
-		//update PopularMessage
-		if(!TweetStatsServiceImpl.retweetOriginalOwnerMap.containsKey(messageId)){
-			if(TweetStatsServiceImpl.followedUserMap.containsKey(tweetingUser))
-			{
-				int retweetingUsersFollowers = TweetStatsServiceImpl.followedUserMap.get(tweetingUser).size();
-				if(TweetStatsServiceImpl.blockedUserMap.containsKey(tweetingUser) && retweetingUsersFollowers > 0)
-				{
-					for(String blockedUser : TweetStatsServiceImpl.blockedUserMap.get(tweetingUser)){
-						if(TweetStatsServiceImpl.followedUserMap.get(tweetingUser).contains(blockedUser) *//*|| TweetStatsServiceImpl.followedUserMap.get(tweetingUser).contains(blockedUser)*//*)
-						{
-							retweetingUsersFollowers-=1;
-						}
-					}
-				}
-				TweetStatsServiceImpl.messageFollowerMap.put(messageId, (TweetStatsServiceImpl.messageFollowerMap.get(messageId) + retweetingUsersFollowers));
-			}
-		}
-		else
-		{
-			//retweet of retweet
-			if(TweetStatsServiceImpl.followedUserMap.containsKey(tweetingUser))
-			{
-				int retweetingUsersFollowers = TweetStatsServiceImpl.followedUserMap.get(tweetingUser).size();
-				if(TweetStatsServiceImpl.blockedUserMap.containsKey(tweetingUser) && retweetingUsersFollowers > 0)
-				{
-					for(String blockedUser : TweetStatsServiceImpl.blockedUserMap.get(tweetingUser)){
-						if(TweetStatsServiceImpl.followedUserMap.get(tweetingUser).contains(blockedUser) *//*|| TweetStatsServiceImpl.followedUserMap.get(tweetingUser).contains(blockedUser)*//*)
-						{
-							retweetingUsersFollowers-=1;
-						}
-					}
-				}
-				//TweetStatsServiceImpl.popularMessageDetailMap.put(TweetStatsServiceImpl.retweetOriginalOwnerMap.get(messageId), (TweetStatsServiceImpl.popularMessageDetailMap.get(messageId) + retweetingUsersFollowers));
-			}
-		}*/
 
 		//update messageSharingMap
 		updateMessageSharingMap(tweetingUser, TweetStatsServiceImpl.retweetedMessageParentMap.get((Integer) result));
+
+		//update PopularMessage
+		if(TweetStatsServiceImpl.messageSharingMap.get(TweetStatsServiceImpl.retweetedMessageParentMap.get((Integer) result)).size() >
+				TweetStatsServiceImpl.messageSharingMap.get(TweetStatsServiceImpl.mostPopularMessageId).size() ||
+				(TweetStatsServiceImpl.messageSharingMap.get(TweetStatsServiceImpl.retweetedMessageParentMap.get((Integer) result)).size() ==
+						TweetStatsServiceImpl.messageSharingMap.get(TweetStatsServiceImpl.mostPopularMessageId).size() &&
+						TweetStatsServiceImpl.mostPopularMessage.compareTo(TweetStatsServiceImpl.messageRepoMap.get(TweetStatsServiceImpl.retweetedMessageParentMap.get((Integer) result))) > 0))
+		{
+			TweetStatsServiceImpl.mostPopularMessage = TweetStatsServiceImpl.messageRepoMap.get(TweetStatsServiceImpl.retweetedMessageParentMap.get((Integer) result));
+			TweetStatsServiceImpl.mostPopularMessageId = TweetStatsServiceImpl.retweetedMessageParentMap.get((Integer) result);
+		}
 	}
 
 	@AfterReturning(pointcut="execution(public * edu.sjsu.cmpe275.aop.tweet.TweetService.follow(..))", returning="result")
