@@ -16,17 +16,26 @@ public class App {
         TweetStatsService stats = (TweetStatsService) ctx.getBean("tweetStatsService");
 
         try {
-            System.out.println("*******************************TESTING PERMISSION ASPECT*******************************");
+
+            int msg = tweeter.tweet("alex", "first tweet");
+            tweeter.follow("bob", "alex");
+            int msg2 = tweeter.tweet("alex", "second tweet");
+            tweeter.block("alex", "bob");
+            int msg3 = tweeter.tweet("alex", "Third tweet");
+            tweeter.retweet("alex", msg3);
+
+            /*System.out.println("*******************************TESTING PERMISSION ASPECT*******************************");
             try {
                 int msg = tweeter.tweet("alex", "The two Giuliani-linked defendants, Igor Fruman and Lev Parnas, were detained at Dulles International Airport outside Washington on Wednesday evening. They were booked on a flight to Frankfurt, Germany, to connect to another flight, according to a law enforcement source.");
+                System.out.println("Permission Test #1 FAILED! XXXXXX XXXXXXXX XXXXXX XXXXXXX XXXXXXXX XXXXXXX XXXXXXXX XXXXXXX XXXXXX");
             }
             catch(IllegalArgumentException e){
                 System.out.println("Permission Test #1 passed");
             }
-            //Test 1
             try {
                 stats.resetStatsAndSystem();
                 int msg = tweeter.tweet("alex", "");
+                System.out.println("Permission Test #2 FAILED! XXXXXX XXXXXXXX XXXXXX XXXXXXX XXXXXXXX XXXXXXX XXXXXXXX XXXXXXX XXXXXX");
             }
             catch(IllegalArgumentException e){
                 System.out.println("PermissionTest #2 passed");
@@ -35,6 +44,7 @@ public class App {
             try {
                 stats.resetStatsAndSystem();
                 int msg = tweeter.tweet(null, "first tweet");
+                System.out.println("Permission Test #3 FAILED! XXXXXX XXXXXXXX XXXXXX XXXXXXX XXXXXXXX XXXXXXX XXXXXXXX XXXXXXX XXXXXX");
             }
             catch(IllegalArgumentException e){
                 System.out.println("Permission Test #3 passed");
@@ -44,6 +54,7 @@ public class App {
                 stats.resetStatsAndSystem();
                 int msg = tweeter.tweet("alex", "first tweet");
                 tweeter.retweet("", 55);
+                System.out.println("Permission Test #4 FAILED! XXXXXX XXXXXXXX XXXXXX XXXXXXX XXXXXXXX XXXXXXX XXXXXXXX XXXXXXX XXXXXX");
             }
             catch(IllegalArgumentException e){
                 System.out.println("Permission Test #4 passed");
@@ -53,6 +64,7 @@ public class App {
                 stats.resetStatsAndSystem();
                 int msg = tweeter.tweet("alex", "first tweet");
                 tweeter.retweet("bob", 55);
+                System.out.println("Permission Test #5 FAILED! XXXXXX XXXXXXXX XXXXXX XXXXXXX XXXXXXXX XXXXXXX XXXXXXXX XXXXXXX XXXXXX");
             }
             catch(AccessControlException e){
                 System.out.println("Permission est #5 passed");
@@ -62,6 +74,7 @@ public class App {
                 stats.resetStatsAndSystem();
                 int msg = tweeter.tweet("alex", "first tweet");
                 tweeter.retweet("bob", msg);
+                System.out.println("Permission Test #6 FAILED! XXXXXX XXXXXXXX XXXXXX XXXXXXX XXXXXXXX XXXXXXX XXXXXXXX XXXXXXX XXXXXX");
             }
             catch(AccessControlException e){
                 System.out.println("Permission Test #6 passed");
@@ -70,9 +83,10 @@ public class App {
             try {
                 stats.resetStatsAndSystem();
                 int msg = tweeter.tweet("alex", "first tweet");
-                tweeter.follow("alex", "bob");
+                tweeter.follow("bob", "alex");
                 tweeter.block("alex", "bob");
                 tweeter.retweet("bob", msg);
+                System.out.println("Permission Test #7 FAILED! XXXXXX XXXXXXXX XXXXXX XXXXXXX XXXXXXXX XXXXXXX XXXXXXXX XXXXXXX XXXXXX");
             }
             catch(AccessControlException e){
                 System.out.println("Permission Test #7 passed");
@@ -81,6 +95,7 @@ public class App {
             try {
                 stats.resetStatsAndSystem();
                 tweeter.follow("alex", "");
+                System.out.println("Permission Test #8 FAILED! XXXXXX XXXXXXXX XXXXXX XXXXXXX XXXXXXXX XXXXXXX XXXXXXXX XXXXXXX XXXXXX");
             }
             catch(IllegalArgumentException e){
                 System.out.println("Permission Test #8 passed");
@@ -90,15 +105,25 @@ public class App {
             stats.resetStatsAndSystem();
             //int msg = tweeter.tweet("alex", "first tweet");
 
-            /*int msg = tweeter.tweet("alex", "first tweet");
+            *//*int msg = tweeter.tweet("alex", "first tweet");
             tweeter.follow("alex", "bob");
-            tweeter.retweet("bob", msg);*/
+            tweeter.retweet("bob", msg);*//*
 
-            /*int msg = tweeter.tweet("alex", "first tweet");
-            tweeter.retweet("alex", msg);*/
+            *//*int msg = tweeter.tweet("alex", "first tweet");
+            tweeter.retweet("alex", msg);*//*
+
+            *//*try {
+                int msg = tweeter.tweet("alex", "first tweet");
+                tweeter.follow("bob", "alex");
+                tweeter.retweet("bob", msg);
+                System.out.println("Permission Test #9 FAILED! XXXXXX XXXXXXXX XXXXXX XXXXXXX XXXXXXXX XXXXXXX XXXXXXXX XXXXXXX XXXXXX");
+            }
+            catch(IllegalArgumentException e){
+                System.out.println("Permission Test #9 passed");
+            }*//*
 
             System.out.println("*******************************TESTING RETRY ASPECT*******************************");
-            /*tweeter.follow("alex", "animesh");
+            *//*tweeter.follow("alex", "animesh");
             int msg0 = tweeter.tweet("alex", "first tweet");
             int msg1 = tweeter.tweet("bob", "first tweet");
             int msg2 = tweeter.tweet("bob", "second tweet");
@@ -107,7 +132,7 @@ public class App {
             tweeter.follow("alex", "Animesh");
             tweeter.follow("alex", "bob");
             tweeter.retweet("bob", msg);
-            tweeter.block("alex", "bob");*/
+            tweeter.block("alex", "bob");*//*
             //tweeter.follow("sameFollow", "sameFollow");
             //tweeter.block("sameBlock", "sameBlock");
 
@@ -133,22 +158,22 @@ public class App {
             }
 
             //Test #2
-            tweeter.follow("alex", "bob");
-            tweeter.follow("alex", "Animesh");
-            tweeter.follow("bob", "Erb");
-            tweeter.follow("alex", "Erb");
-            tweeter.follow("bob", "Peter");
-            tweeter.follow("bob", "Chris");
-            tweeter.follow("bob", "Henry");
-            tweeter.follow("Erb", "Peter");
-            tweeter.follow("rachael", "Peter");
-            tweeter.follow("rachael", "Sussy");
-            tweeter.follow("rachael", "Hannah");
-            tweeter.follow("rachael", "Monty");
-            tweeter.follow("ark", "Peter");
-            tweeter.follow("ark", "Sussy");
-            tweeter.follow("ark", "Hannah");
-            tweeter.follow("ark", "Monty");
+            tweeter.follow("bob", "alex");
+            tweeter.follow("Animesh", "alex");
+            tweeter.follow("Erb", "bob");
+            tweeter.follow("Erb", "alex");
+            tweeter.follow("Peter", "bob");
+            tweeter.follow("Chris", "bob");
+            tweeter.follow("Hannah", "bob");
+            tweeter.follow("Suusy", "Erb");
+            tweeter.follow("sarah", "rachael");
+            tweeter.follow("mo", "rachael");
+            tweeter.follow("Fatima", "rachael");
+            tweeter.follow("alex", "rachael");
+            tweeter.follow("susan", "ark");
+            tweeter.follow("Susan", "ark");
+            tweeter.follow("Kirpal", "ark");
+            tweeter.follow("Manohar", "ark");
             System.out.println("STATS --- Most popular user: " + stats.getMostFollowedUser());
             if(stats.getMostFollowedUser().equals("ark")){
                 System.out.println("Stats Test #2 passed");
@@ -167,7 +192,7 @@ public class App {
             }
 
             //Test #4
-            /*System.out.println("STATS --- Most popular message: " + stats.getMostPopularMessage());
+            *//*System.out.println("STATS --- Most popular message: " + stats.getMostPopularMessage());
             if(stats.getMostPopularMessage().equals("bob")){
                 System.out.println("Stats Test #4 passed");
             }

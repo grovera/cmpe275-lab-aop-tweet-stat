@@ -8,6 +8,7 @@ import org.springframework.core.annotation.Order;
 import edu.sjsu.cmpe275.aop.tweet.TweetStatsServiceImpl;
 
 import java.security.AccessControlException;
+import java.util.Set;
 
 @Aspect
 @Order(2)
@@ -32,17 +33,21 @@ public class PermissionAspect {
 			throw new IllegalArgumentException("Arguments are not valid");
 		}
 		else {
-			String tweetOwner = TweetStatsServiceImpl.messageIdUserMap.get(messageId);
 			if(!TweetStatsServiceImpl.messageIdUserMap.keySet().contains(messageId)) {
 				throw new AccessControlException("An access control violation was attempted. MessageId provided does not exist.");
 			}
 			else
 			{
-				if (((!TweetStatsServiceImpl.followedUserMap.containsKey(tweetOwner) || !TweetStatsServiceImpl.followedUserMap.get(tweetOwner).contains(tweetingUser)) && !tweetOwner.equals(tweetingUser))) {
-					throw new AccessControlException("An access control violation was attempted. User does not have access to this Tweet");
+				System.out.println("entered ???????????????????????");
+				String tweetOwner = TweetStatsServiceImpl.messageIdUserMap.get(messageId);
+				System.out.println("TweetOwner: "+ tweetOwner);
+				for (String id: TweetStatsServiceImpl.followedUserMap.keySet()) {
+					Set<String> value = TweetStatsServiceImpl.followedUserMap.get(id);
+					System.out.println(id + " " + value.toString());
 				}
-				if(TweetStatsServiceImpl.blockedUserMap.containsKey(tweetOwner) && TweetStatsServiceImpl.blockedUserMap.get(tweetOwner).contains(tweetingUser)) {
-					throw new AccessControlException("An access control violation was attempted. User if blocked by the Tweet author");
+				int parentMessageId = TweetStatsServiceImpl.messageSharingMap.containsKey(messageId) ? messageId : TweetStatsServiceImpl.retweetedMessageParentMap.get(messageId);
+				if (!TweetStatsServiceImpl.messageSharingMap.get(parentMessageId).contains(tweetingUser) && !tweetOwner.equals(tweetingUser)) {
+					throw new AccessControlException("An access control violation was attempted. User does not have access to this Tweet");
 				}
 			}
 		}

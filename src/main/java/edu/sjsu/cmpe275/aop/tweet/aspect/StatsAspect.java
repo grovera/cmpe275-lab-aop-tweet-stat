@@ -42,7 +42,7 @@ public class StatsAspect {
 		}
 
 		//update PopularMessage
-		if(TweetStatsServiceImpl.mostPopularMessage == null)
+		/*if(TweetStatsServiceImpl.mostPopularMessage == null)
 		{
 			TweetStatsServiceImpl.mostPopularMessage = tweetedMessage;
 			TweetStatsServiceImpl.mostPopularMessageId = (Integer) result;
@@ -77,7 +77,7 @@ public class StatsAspect {
 				}
 				TweetStatsServiceImpl.messageFollowerMap.put((Integer) result, primaryFollowers);
 			}
-		}
+		}*/
 
 		//Update productiveUserMap
 		int tempTotalMessageLength = TweetStatsServiceImpl.productiveUserMap.containsKey(tweetingUser) ? TweetStatsServiceImpl.productiveUserMap.get(tweetingUser) : 0;
@@ -102,6 +102,9 @@ public class StatsAspect {
 		else{
 			TweetStatsServiceImpl.mostProductiveUser = tweetingUser;
 		}
+
+		//update messageSharingMap
+		updateMessageSharingMap(tweetingUser, (Integer) result);
 	}
 
 	@AfterReturning(pointcut="execution(public * edu.sjsu.cmpe275.aop.tweet.TweetService.retweet(..))", returning="result")
@@ -110,7 +113,14 @@ public class StatsAspect {
 		int messageId = (Integer) joinPoint.getArgs()[1];
 
 		//save message data
-		TweetStatsServiceImpl.retweetOriginalOwnerMap.put((Integer) result, messageId);
+		TweetStatsServiceImpl.messageIdUserMap.put((Integer) result, tweetingUser);
+		if(TweetStatsServiceImpl.retweetedMessageParentMap.containsKey(messageId)){
+			TweetStatsServiceImpl.retweetedMessageParentMap.put((Integer) result, TweetStatsServiceImpl.retweetedMessageParentMap.get(messageId));
+		}
+		else{
+			TweetStatsServiceImpl.retweetedMessageParentMap.put((Integer) result, messageId);
+		}
+		/*TweetStatsServiceImpl.retweetOriginalOwnerMap.put((Integer) result, messageId);
 
 		//update PopularMessage
 		if(!TweetStatsServiceImpl.retweetOriginalOwnerMap.containsKey(messageId)){
@@ -120,7 +130,7 @@ public class StatsAspect {
 				if(TweetStatsServiceImpl.blockedUserMap.containsKey(tweetingUser) && retweetingUsersFollowers > 0)
 				{
 					for(String blockedUser : TweetStatsServiceImpl.blockedUserMap.get(tweetingUser)){
-						if(TweetStatsServiceImpl.followedUserMap.get(tweetingUser).contains(blockedUser) /*|| TweetStatsServiceImpl.followedUserMap.get(tweetingUser).contains(blockedUser)*/)
+						if(TweetStatsServiceImpl.followedUserMap.get(tweetingUser).contains(blockedUser) *//*|| TweetStatsServiceImpl.followedUserMap.get(tweetingUser).contains(blockedUser)*//*)
 						{
 							retweetingUsersFollowers-=1;
 						}
@@ -138,7 +148,7 @@ public class StatsAspect {
 				if(TweetStatsServiceImpl.blockedUserMap.containsKey(tweetingUser) && retweetingUsersFollowers > 0)
 				{
 					for(String blockedUser : TweetStatsServiceImpl.blockedUserMap.get(tweetingUser)){
-						if(TweetStatsServiceImpl.followedUserMap.get(tweetingUser).contains(blockedUser) /*|| TweetStatsServiceImpl.followedUserMap.get(tweetingUser).contains(blockedUser)*/)
+						if(TweetStatsServiceImpl.followedUserMap.get(tweetingUser).contains(blockedUser) *//*|| TweetStatsServiceImpl.followedUserMap.get(tweetingUser).contains(blockedUser)*//*)
 						{
 							retweetingUsersFollowers-=1;
 						}
@@ -146,38 +156,41 @@ public class StatsAspect {
 				}
 				//TweetStatsServiceImpl.popularMessageDetailMap.put(TweetStatsServiceImpl.retweetOriginalOwnerMap.get(messageId), (TweetStatsServiceImpl.popularMessageDetailMap.get(messageId) + retweetingUsersFollowers));
 			}
-		}
+		}*/
+
+		//update messageSharingMap
+		updateMessageSharingMap(tweetingUser, TweetStatsServiceImpl.retweetedMessageParentMap.get((Integer) result));
 	}
 
 	@AfterReturning(pointcut="execution(public * edu.sjsu.cmpe275.aop.tweet.TweetService.follow(..))", returning="result")
 	public void afterFollow(JoinPoint joinPoint, Object result) {
-		//Add followee to the follower map
+		//Add follower to the follower map
 		String follower = (String) joinPoint.getArgs()[0];
 		String followee = (String) joinPoint.getArgs()[1];
 		Set<String> followerList = new HashSet<String>();
-		if(TweetStatsServiceImpl.followedUserMap.containsKey(follower))
+		if(TweetStatsServiceImpl.followedUserMap.containsKey(followee))
 		{
-			followerList.addAll(TweetStatsServiceImpl.followedUserMap.get(follower));
+			followerList.addAll(TweetStatsServiceImpl.followedUserMap.get(followee));
 		}
-		followerList.add(followee);
-		TweetStatsServiceImpl.followedUserMap.put(follower, followerList);
+		followerList.add(follower);
+		TweetStatsServiceImpl.followedUserMap.put(followee, followerList);
 
 		//Update most mostFollowedUser if needed
 		if(TweetStatsServiceImpl.mostFollowedUser != null)
 		{
-			if(!TweetStatsServiceImpl.mostFollowedUser.equals(follower))
+			if(!TweetStatsServiceImpl.mostFollowedUser.equals(followee))
 			{
 				if(followerList.size() > TweetStatsServiceImpl.followedUserMap.get(TweetStatsServiceImpl.mostFollowedUser).size()){
-					TweetStatsServiceImpl.mostFollowedUser = follower;
+					TweetStatsServiceImpl.mostFollowedUser = followee;
 				}
 				//if there is tie
 				else if(followerList.size() == TweetStatsServiceImpl.followedUserMap.get(TweetStatsServiceImpl.mostFollowedUser).size()){
-					TweetStatsServiceImpl.mostFollowedUser = TweetStatsServiceImpl.mostFollowedUser.compareTo(follower) > 0 ? follower : TweetStatsServiceImpl.mostFollowedUser;
+					TweetStatsServiceImpl.mostFollowedUser = TweetStatsServiceImpl.mostFollowedUser.compareTo(followee) > 0 ? followee : TweetStatsServiceImpl.mostFollowedUser;
 				}
 			}
 		}
 		else{
-			TweetStatsServiceImpl.mostFollowedUser = follower;
+			TweetStatsServiceImpl.mostFollowedUser = followee;
 		}
 	}
 
@@ -205,4 +218,20 @@ public class StatsAspect {
 		}*/
 	}
 
+	private void updateMessageSharingMap(String user, int messageId)
+	{
+		Set<String> sharingEnabledFollowers = new HashSet<String>();
+		if(TweetStatsServiceImpl.followedUserMap.containsKey(user)){
+			sharingEnabledFollowers.addAll(TweetStatsServiceImpl.followedUserMap.get(user));
+			if(TweetStatsServiceImpl.blockedUserMap.containsKey(user)){
+				sharingEnabledFollowers.removeAll(TweetStatsServiceImpl.blockedUserMap.get(user));
+			}
+		}
+		//in case of retweet (also add follower which could have been blocked by the original owner of the tweet)
+		if(TweetStatsServiceImpl.messageSharingMap.containsKey(messageId))
+		{
+			sharingEnabledFollowers.addAll(TweetStatsServiceImpl.messageSharingMap.get(messageId));
+		}
+		TweetStatsServiceImpl.messageSharingMap.put(messageId, sharingEnabledFollowers);
+	}
 }
