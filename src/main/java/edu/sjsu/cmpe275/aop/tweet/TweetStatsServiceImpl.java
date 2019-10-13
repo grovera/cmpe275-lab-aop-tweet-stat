@@ -3,10 +3,6 @@ package edu.sjsu.cmpe275.aop.tweet;
 import java.util.*;
 
 public class TweetStatsServiceImpl implements TweetStatsService {
-    /***
-     * Following is a dummy implementation.
-     * You are expected to provide an actual implementation based on the requirements.
-     */
 
     public static int lengthOfLongestTweet = 0;
 	public static String mostFollowedUser = null;
@@ -18,6 +14,7 @@ public class TweetStatsServiceImpl implements TweetStatsService {
 	public static Map<String, Set<String>> followedUserMap = new HashMap<String, Set<String>>();
 	public static Map<String, Set<String>> blockedUserMap = new HashMap<String, Set<String>>();
 	public static Map<Integer, Set<String>> messageSharingMap = new HashMap<Integer, Set<String>>();
+
 	//map to store returned message id and tweeting user (could be retweet also)
 	public static Map<Integer, String> messageIdUserMap = new HashMap<Integer, String>();
 	public static Map<Integer, String> messageRepoMap = new HashMap<Integer, String>();
@@ -48,6 +45,9 @@ public class TweetStatsServiceImpl implements TweetStatsService {
 		}
 		if(!messageRepoMap.isEmpty()){
 			messageRepoMap.clear();
+		}
+		if(!retweetedMessageParentMap.isEmpty()){
+			retweetedMessageParentMap.clear();
 		}
 	}
 

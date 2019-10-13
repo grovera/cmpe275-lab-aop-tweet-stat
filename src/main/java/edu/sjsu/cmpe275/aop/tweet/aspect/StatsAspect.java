@@ -13,10 +13,6 @@ import java.util.Set;
 @Aspect
 @Order(0)
 public class StatsAspect {
-    /***
-     * Following is a dummy implementation of this aspect.
-     * You are expected to provide an actual implementation based on the requirements, including adding/removing advices as needed.
-     */
 
 	@Autowired TweetStatsServiceImpl stats;
 	
