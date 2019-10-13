@@ -30,6 +30,9 @@ public class App {
             //tweeter.block("sameBlock", "sameBlock");
 
             int msg0 = tweeter.tweet("alex", "first tweet");
+            tweeter.follow("bob", "alex");
+            int msg1 = tweeter.retweet("alex", msg0);
+            tweeter.block("alex", "bob");
 
         } catch (Exception e) {
             e.printStackTrace();

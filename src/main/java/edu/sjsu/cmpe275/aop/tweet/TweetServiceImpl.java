@@ -11,14 +11,16 @@ public class TweetServiceImpl implements TweetService {
      * You can tweak the implementation to suit your need, but this file is NOT part of the submission.
      */
     private int x = 1;
+	private int y = 1;
+	private int z = 1;
 
     public int tweet(String user, String message) throws IllegalArgumentException, IOException {
-		if ((message.length() > 140) || user == null || user.length() == 0 ||  message == null || message.length() == 0) {
+		/*if ((message.length() > 140) || user == null || user.length() == 0 ||  message == null || message.length() == 0) {
 			throw new IllegalArgumentException();
-		}
+		}*/
 		int temp = getMessageId();
 		if(temp == 0){
-			throw new IOException("test exception");
+			throw new IOException();
 		}
 		else {
 			System.out.printf("User %s tweeted message: %s\n", user, message);
@@ -27,21 +29,42 @@ public class TweetServiceImpl implements TweetService {
     }
 
     public void follow(String follower, String followee) throws IOException {
-       	System.out.printf("User %s followed user %s \n", follower, followee);
+		int temp = y;
+		y++;
+		if(temp>=3){
+			System.out.printf("User %s followed user %s \n", follower, followee);
+			y=1;
+		}
+		else {
+			throw new IOException();
+		}
     }
 
 	public void block(String user, String follower) throws IOException {
-       	System.out.printf("User %s blocked user %s \n", user, follower);
+		int temp = z;
+		z++;
+		if(temp>=3){
+			System.out.printf("User %s blocked user %s \n", user, follower);
+			z=1;
+		}
+		else {
+			throw new IOException();
+		}
 	}
 
 	public int retweet(String user, int messageId)
 			throws AccessControlException, IllegalArgumentException, IOException {
-		if (user == null || user.length() == 0) {
+		/*if (user == null || user.length() == 0) {
 			throw new IllegalArgumentException();
+		}*/
+		int temp = getMessageId();
+		if(temp == 0){
+			throw new IOException();
 		}
-		System.out.printf("User %s retweeted message.\n", user);
-
-		return 0;
+		else {
+			System.out.printf("User %s retweeted message.\n", user);
+			return temp;
+		}
 	}
 
 	private int getMessageId() {
@@ -50,12 +73,11 @@ public class TweetServiceImpl implements TweetService {
 
 		Random rand = new Random();
 		int n = rand.nextInt(10);
-		if(n%2==1){
-			//return 0;
+		if(x>=4){
 			return temp;
 		}
 		else {
-			return temp;
+			return 0;
 		}
 	}
 }

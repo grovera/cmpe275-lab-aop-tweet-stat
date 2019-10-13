@@ -95,6 +95,11 @@ public class TweetTest {
         tweeter.follow("alex", "alex");
     }
 
+    @Test
+    public void test_PA_follow() throws IOException {
+        tweeter.follow("alex", "bob");
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void test_PA_block_nullFollowee() throws IOException {
         tweeter.block("bob", null);
