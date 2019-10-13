@@ -1,13 +1,13 @@
 package edu.sjsu.cmpe275.aop.tweet.aspect;
 
+import edu.sjsu.cmpe275.aop.tweet.TweetStatsServiceImpl;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.core.annotation.Order;
 
-import edu.sjsu.cmpe275.aop.tweet.TweetStatsServiceImpl;
-
 import java.security.AccessControlException;
+import java.util.HashSet;
 import java.util.Set;
 
 @Aspect
@@ -39,8 +39,15 @@ public class PermissionAspect {
 			else
 			{
 				String tweetOwner = TweetStatsServiceImpl.messageIdUserMap.get(messageId);
+				String tweetOriginalOwner = TweetStatsServiceImpl.retweetedMessageParentMap.containsKey(messageId) ?
+							TweetStatsServiceImpl.messageIdUserMap.get(TweetStatsServiceImpl.retweetedMessageParentMap.get(messageId)) : null;
 				int parentMessageId = TweetStatsServiceImpl.messageSharingMap.containsKey(messageId) ? messageId : TweetStatsServiceImpl.retweetedMessageParentMap.get(messageId);
-				if (!TweetStatsServiceImpl.messageSharingMap.get(parentMessageId).contains(tweetingUser) && !tweetOwner.equals(tweetingUser)) {
+				Set<String> currentSharedUsers = new HashSet<String>();
+				currentSharedUsers.addAll(TweetStatsServiceImpl.messageSharingMap.get(parentMessageId));
+				if(tweetOriginalOwner != null){
+					currentSharedUsers.add(tweetOriginalOwner);
+				}
+				if (!currentSharedUsers.contains(tweetingUser) && !tweetOwner.equals(tweetingUser)) {
 					throw new AccessControlException("An access control violation was attempted. User does not have access to this Tweet");
 				}
 			}

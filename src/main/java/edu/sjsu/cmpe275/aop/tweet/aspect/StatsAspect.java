@@ -1,18 +1,13 @@
 package edu.sjsu.cmpe275.aop.tweet.aspect;
 
+import edu.sjsu.cmpe275.aop.tweet.TweetStatsServiceImpl;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 
-import edu.sjsu.cmpe275.aop.tweet.TweetStatsServiceImpl;
-
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Aspect
@@ -50,12 +45,14 @@ public class StatsAspect {
 		{
 			if(!TweetStatsServiceImpl.mostProductiveUser.equals(tweetingUser))
 			{
+				int x = TweetStatsServiceImpl.productiveUserMap.get(tweetingUser);
+				int y = TweetStatsServiceImpl.productiveUserMap.get(TweetStatsServiceImpl.mostProductiveUser);
 				if(TweetStatsServiceImpl.productiveUserMap.get(tweetingUser) > TweetStatsServiceImpl.productiveUserMap.get(TweetStatsServiceImpl.mostProductiveUser))
 				{
 					TweetStatsServiceImpl.mostProductiveUser = tweetingUser;
 				}
 				//if there is tie
-				else if(TweetStatsServiceImpl.productiveUserMap.get(tweetingUser) == TweetStatsServiceImpl.productiveUserMap.get(TweetStatsServiceImpl.mostProductiveUser))
+				else if(TweetStatsServiceImpl.productiveUserMap.get(tweetingUser).equals(TweetStatsServiceImpl.productiveUserMap.get(TweetStatsServiceImpl.mostProductiveUser)))
 				{
 					TweetStatsServiceImpl.mostProductiveUser = TweetStatsServiceImpl.mostProductiveUser.compareTo(tweetingUser) > 0 ? tweetingUser : TweetStatsServiceImpl.mostProductiveUser;
 				}
@@ -74,8 +71,10 @@ public class StatsAspect {
 				(TweetStatsServiceImpl.messageSharingMap.get((Integer) result).size() == TweetStatsServiceImpl.messageSharingMap.get(TweetStatsServiceImpl.mostPopularMessageId).size() &&
 						TweetStatsServiceImpl.mostPopularMessage.compareTo(tweetedMessage) > 0))
 		{
-			TweetStatsServiceImpl.mostPopularMessage = tweetedMessage;
-			TweetStatsServiceImpl.mostPopularMessageId = (Integer) result;
+			if(TweetStatsServiceImpl.messageSharingMap.get((Integer) result).size() > 0 ){
+				TweetStatsServiceImpl.mostPopularMessage = tweetedMessage;
+				TweetStatsServiceImpl.mostPopularMessageId = (Integer) result;
+			}
 		}
 	}
 
@@ -152,16 +151,6 @@ public class StatsAspect {
 		}
 		blockList.add(followee);
 		TweetStatsServiceImpl.blockedUserMap.put(user, blockList);
-
-		//
-		/*for (int id: TweetStatsServiceImpl.popularMessageDetailMap.keySet()){
-			int value = TweetStatsServiceImpl.popularMessageDetailMap.get(id);
-			System.out.println(id + " " + value);
-		}*/
-		/*for (int id: TweetStatsServiceImpl.messageIdUserMap.keySet()){
-			String value = TweetStatsServiceImpl.messageIdUserMap.get(id);
-			System.out.println(id + " " + value);
-		}*/
 	}
 
 	private void updateMessageSharingMap(String user, int messageId)
@@ -178,6 +167,9 @@ public class StatsAspect {
 		{
 			sharingEnabledFollowers.addAll(TweetStatsServiceImpl.messageSharingMap.get(messageId));
 		}
+		//remove original owner if they follow one who retweets
+		sharingEnabledFollowers.remove(TweetStatsServiceImpl.messageIdUserMap.get(messageId));
+
 		TweetStatsServiceImpl.messageSharingMap.put(messageId, sharingEnabledFollowers);
 	}
 }
