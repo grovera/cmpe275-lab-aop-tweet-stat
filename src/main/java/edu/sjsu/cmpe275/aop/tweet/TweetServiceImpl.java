@@ -73,7 +73,7 @@ public class TweetServiceImpl implements TweetService {
 
 		Random rand = new Random();
 		int n = rand.nextInt(10);
-		if(x>=4){
+		if(x>=5){
 			return temp;
 		}
 		else {

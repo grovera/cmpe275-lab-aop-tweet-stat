@@ -26,30 +26,17 @@ public class RetryAspect {
 				result = joinPoint.proceed();
 				retryCount = 0;
 				break;
-			} catch (IOException a) {
+			} catch (IOException e) {
 				retryCount += 1;
 				if(retryCount>3){
-					break;
+					System.out.printf("Network Failure! Aborted the executuion of the metohd %s after 3 tries\n", joinPoint.getSignature().getName());
+					retryCount = 0;
+					throw e;
 				}
-				System.out.println("Try # " + retryCount);
+				System.out.println("Network Failure! Retrying.......  try# " + retryCount);
 				continue;
 			}
 		}
 		return result;
 	}
-
-	/*@Around("execution(public int edu.sjsu.cmpe275.aop.tweet.TweetService.*tweet(..))")
-	public int dummyAdviceOne(ProceedingJoinPoint joinPoint) throws Throwable {
-		System.out.printf("Prior to the executuion of the metohd %s\n", joinPoint.getSignature().getName());
-		Integer result = null;
-		try {
-			result = (Integer) joinPoint.proceed();
-			System.out.printf("Finished the executuion of the metohd %s with result %s\n", joinPoint.getSignature().getName(), result);
-		} catch (Throwable e) {
-			e.printStackTrace();
-			System.out.printf("Aborted the executuion of the metohd %s\n", joinPoint.getSignature().getName());
-			throw e;
-		}
-		return result.intValue();
-	}*/
 }
